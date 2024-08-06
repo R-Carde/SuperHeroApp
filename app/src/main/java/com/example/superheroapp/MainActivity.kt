@@ -8,6 +8,8 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.example.superheroapp.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var retrofit: Retrofit
-
+    private lateinit var adapter: SuperHeroAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -38,6 +40,10 @@ class MainActivity : AppCompatActivity() {
             override fun onQueryTextChange(newText: String?)=false
 
         })
+        adapter=SuperHeroAdapter()
+        binding.rvSuperHero.setHasFixedSize(true)
+        binding.rvSuperHero.layoutManager=LinearLayoutManager(this)
+        binding.rvSuperHero.adapter=adapter
     }
 
     private fun searchByName(query: String) {
@@ -50,6 +56,7 @@ class MainActivity : AppCompatActivity() {
                 if(response!=null){
                     Log.i("renzo", response.toString())
                     runOnUiThread{
+                        adapter.updateList(response.superheroes)
                         binding.progressBar.isVisible=false
                     }
                 }else{
